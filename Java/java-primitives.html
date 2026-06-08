@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Primitive Data Types</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0d14;
+    --surface: #111520;
+    --border: #1e2535;
+    --accent-int: #4fc3f7;
+    --accent-float: #81c784;
+    --accent-text: #ff8a65;
+    --accent-bool: #ce93d8;
+    --dim: #4a5568;
+    --muted: #8892a4;
+    --bright: #e8edf5;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--bright);
+    min-height: 100vh;
+    padding: 40px 24px;
+  }
+
+  .page {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  header {
+    margin-bottom: 40px;
+    border-left: 4px solid var(--accent-int);
+    padding-left: 20px;
+    animation: fadeIn 0.6s ease both;
+  }
+
+  header .label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 6px;
+  }
+
+  header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(24px, 5vw, 40px);
+    font-weight: 800;
+    color: var(--bright);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  header h1 span { color: var(--accent-int); }
+
+  .subtitle {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* Category labels */
+  .category-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    animation: fadeIn 0.6s 0.1s ease both;
+  }
+
+  .cat-badge {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 2px;
+    font-weight: 700;
+  }
+  .cat-integer  { background: rgba(79,195,247,0.12); color: var(--accent-int);   border: 1px solid rgba(79,195,247,0.25); }
+  .cat-floating { background: rgba(129,199,132,0.12); color: var(--accent-float); border: 1px solid rgba(129,199,132,0.25); }
+  .cat-text     { background: rgba(255,138,101,0.12); color: var(--accent-text);  border: 1px solid rgba(255,138,101,0.25); }
+  .cat-bool     { background: rgba(206,147,216,0.12); color: var(--accent-bool);  border: 1px solid rgba(206,147,216,0.25); }
+
+  /* Grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    animation: slideUp 0.5s ease both;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    border-color: var(--card-accent, #4fc3f7);
+  }
+
+  .card:nth-child(1) { animation-delay: 0.05s; }
+  .card:nth-child(2) { animation-delay: 0.10s; }
+  .card:nth-child(3) { animation-delay: 0.15s; }
+  .card:nth-child(4) { animation-delay: 0.20s; }
+  .card:nth-child(5) { animation-delay: 0.25s; }
+  .card:nth-child(6) { animation-delay: 0.30s; }
+  .card:nth-child(7) { animation-delay: 0.35s; }
+  .card:nth-child(8) { animation-delay: 0.40s; }
+
+  .card-int   { --card-accent: var(--accent-int);   }
+  .card-float { --card-accent: var(--accent-float); }
+  .card-text  { --card-accent: var(--accent-text);  }
+  .card-bool  { --card-accent: var(--accent-bool);  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .type-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--card-accent, #4fc3f7);
+    letter-spacing: -0.02em;
+    min-width: 70px;
+  }
+
+  .meta {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .meta-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .byte-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.05);
+    color: var(--card-accent, #4fc3f7);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .category-tag {
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .range-label {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .range-val {
+    font-size: 11px;
+    color: var(--bright);
+    opacity: 0.85;
+    line-height: 1.4;
+  }
+
+  /* Code block */
+  .code-block {
+    padding: 12px 18px;
+    background: rgba(0,0,0,0.25);
+  }
+
+  .code-line {
+    font-size: 12px;
+    line-height: 1.8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .kw   { color: #c792ea; }   /* keyword */
+  .ty   { color: var(--card-accent, #4fc3f7); }  /* type */
+  .id   { color: #82aaff; }   /* identifier */
+  .op   { color: var(--dim); } /* operator */
+  .val  { color: #f78c6c; }   /* value */
+  .str  { color: #c3e88d; }   /* string/char */
+  .cmt  { color: #546e7a; font-style: italic; }  /* comment */
+
+  /* Bit bar */
+  .bit-bar {
+    display: flex;
+    gap: 2px;
+    padding: 10px 18px 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .bit {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.04);
+    flex-shrink: 0;
+  }
+
+  .bit.active {
+    background: var(--card-accent, #4fc3f7);
+    opacity: 0.7;
+    border-color: transparent;
+  }
+
+  .bit-label {
+    font-size: 9px;
+    color: var(--dim);
+    margin-left: 8px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* Footer note */
+  footer {
+    margin-top: 32px;
+    padding: 16px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.8;
+    animation: fadeIn 0.6s 0.5s ease both;
+  }
+
+  footer strong { color: var(--bright); }
+
+  @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+
+  
+<div class="page">
+
+  <header>
+    <div class="label">Java Reference — Primitives</div>
+    <h1>Java <span>Primitive</span> Data Types</h1>
+    <a href="../index.html" class="type-name">Home</a>
+    <div class="subtitle">8 types · sizes · value ranges · sample declarations</div>
+  </header>
+
+
+  <div class="category-row">
+    <span class="cat-badge cat-integer">Integer</span>
+    <span class="cat-badge cat-floating">Floating-Point</span>
+    <span class="cat-badge cat-text">Character</span>
+    <span class="cat-badge cat-bool">Boolean</span>
+  </div>
+
+  <div class="grid">
+
+    <!-- byte -->
+    <div class="card card-int">
+      <div class="card-header">
+        <div class="type-name">byte</div>
+        <div class="meta">
+          <div class="meta-row">
+            <span class="byte-badge">1 byte · 8 bits</span>
+            <span class="category-tag">Integer</span>
+          </div>
+          <div class="range-label">Value range</div>
+          <div class="range-val">−128 &nbsp;to&nbsp; 127</div>
+        </div>
+      </div>
+      <div class="bit-bar">
+        <div class="bit active"></div><!-- sign -->
+        <div class="bit"></div><div class="bit"></div><div class="bit"></div>
+        <div class="bit"></div><div class="bit"></div><div class="bit"></div>
+        <div class="bit"></div>
+        <span class="bit-label">8 bits</span>
+      </div>
+      <div class="code-block">
+        <div class="code-line"><span class="ty">byte</span> <span class="id">age</span> <span class="op">=</span> <span class="val">25</span><span class="op">;</span></div>
+        <div class="code-line"><span class="ty">byte</span> <span class="id">minVal</span> <span class="op">=</span> <span class="val">-128</span><span class="op">;</span></div>
+        <div class="code-line"><span class="ty">byte</span> <span class="id">maxVal</span> <span class="op">=</span> <span class="val">127</span><span class="op">;</span></div>
+        <div class="code-line"><span class="cmt">// Compact; useful for streams &amp; arrays</span></div>
+      </div>
+    </div>
+
+    <!-- short -->
+    <div class="card card-int">
+      <div class="card-header">
+        <div class="type-name">short</div>
+        <div class="meta">
+          <div class="meta-row">
+            <span class="byte-badge">2 bytes · 16 bits</span>
+            <span class="category-tag">Integer</span>
+          </div>
+          <div class="range-label">Value range</div>
+          <div class="range-val">−32,768 &nbsp;to&nbsp; 32,767</div>
+        </div>
+      </div>
+      <div class="bit-bar">
+        <div class="bit active"></div>
+        <div class="bit"></div><div class="bit"></div><div class="bit"></div><div class="bit"></div>
+        <div class="bit"></div><div class="bit"></div><div class="bit"></div>
+        <div class="bit"></div><div class="bit"></div><div class="bit"></div><div class="bit"></div>
+        <div class="bit"></div><div class="bit"></div><div class="bit"></div><div class="bit"></div>
+        <span class="bit-label">16 bits</span>
+      </div>
+      <div class="code-block">
+        <div class="code-line"><span class="ty">short</span> <span class="id">year</span> <span class="op">=</span> <span class="val">2024</span><span class="op">;</span></div>
+        <div class="code-line"><span class="ty">short</span> <span class="id">temp</span> <span class="op">=</span> <span class="val">-273</span><span class="op">;</span></div>
+        <div class="code-line"><span class="ty">short</span> <span class="id">score</span> <span class="op">=</span> <span class="val">32_767</span><span class="op">;</span></div>
+        <div class="code-line"><span class="cmt">// Rare; saves memory in large arrays</span></div>
+      </div>
+    </div>
+
+    <!-- int -->
+    <div class="card card-int">
+      <div class="card-header">
+        <div class="type-name">int</div>
+        <div class="meta">
+          <div class="meta-row">
+            <span class="byte-badge">4 bytes · 32 bits</span>
+            <span class="category-tag">Integer</span>
+          </div>
+          <div class="range-label">Value range</div>
+          <div class="range-val">−2,147,483,648 &nbsp;to&nbsp; 2,147,483,647</div>
+        </div>
+      </div>
+      <div class="bit-bar">
+        <div class="bit active"></div>
+        <div class="bit"></div><div class="bit"></div><div class="bit"></div><div class="bit"></div>
+        <div class="bit"></div><div class="bit"></div><div class="bit"></div>
+        <div class="bit"></div><div class="bit"></div><div class="bit"></div><div class="bit"></div>
+        <div class="bit"></div><div class="bit"></div><div class="bit"></div><div class="bit"></div>
+        <span class="bit-label">32 bits (shown × ½)</span>
+      </div>
+      <div class="code-block">
+        <div class="code-line"><span class="ty">int</span> <span class="id">count</span> <span class="op">=</span> <span class="val">0</span><span class="op">;</span></div>
+        <div class="code-line"><span class="ty">int</span> <span class="id">population</span> <span class="op">=</span> <span class="val">8_100_000_000</span><span class="op">;</span> <span class="cmt">// ⚠ overflow!</span></div>
+        <div class="code-line"><span class="ty">int</span> <span class="id">hex</span> <span class="op">=</span> <span class="val">0xFF_A0</span><span class="op">;</span></div>
+        <div class="code-line"><span class="cmt">// Default integer type in Java</span></div>
+      </div>
+    </div>
+
+    <!-- long -->
+    <div class="card card-int">
+      <div class="card-header">
+        <div class="type-name">long</div>
+        <div class="meta">
+          <div class="meta-row">
+            <span class="byte-badge">8 bytes · 64 bits</span>
+            <span class="category-tag">Integer</span>
+          </div>
+          <div class="range-label">Value range</div>
+          <div class="range-val">−9.2 × 10¹⁸ &nbsp;to&nbsp; 9.2 × 10¹⁸</div>
+        </div>
+      </div>
+      <div class="bit-bar">
+        <div class="bit active"></div>
+        <div class="bit"></div><div class="bit"></div><div class="bit"></div><div class="bit"></div>
+        <div class="bit"></div><div class="bit"></div><div class="bit"></div>
+        <div class="bit"></div><div class="bit"></div><div class="bit"></div><div class="bit"></div>
+        <div class="bit"></div><div class="bit"></div><div class="bit"></div><div class="bit"></div>
+        <span class="bit-label">64 bits (shown × ¼)</span>
+      </div>
+      <div class="code-block">
+        <div class="code-line"><span class="ty">long</span> <span class="id">worldPop</span> <span class="op">=</span> <span class="val">8_100_000_000L</span><span class="op">;</span></div>
+        <div class="code-line"><span class="ty">long</span> <span class="id">timestamp</span> <span class="op">=</span> <span class="val">System</span><span class="op">.</span><span class="id">currentTimeMillis</span><span class="op">();</span></div>
+        <div class="code-line"><span class="ty">long</span> <span class="id">binary</span> <span class="op">=</span> <span class="val">0b1010_1111L</span><span class="op">;</span></div>
+        <div class="code-line"><span class="cmt">// Suffix L required for long literals</span></div>
+      </div>
+    </div>
+
+    <!-- float -->
+    <div class="card card-float">
+      <div class="card-header">
+        <div class="type-name">float</div>
+        <div class="meta">
+          <div class="meta-row">
+            <span class="byte-badge">4 bytes · 32 bits</span>
+            <span class="category-tag">Floating-Point</span>
+          </div>
+          <div class="range-label">Approximate range</div>
+          <div class="range-val">±1.4 × 10⁻⁴⁵ &nbsp;to&nbsp; ±3.4 × 10³⁸ &nbsp;(~7 sig. digits)</div>
+        </div>
+      </div>
+      <div class="bit-bar">
+        <div class="bit active"></div><!-- sign -->
+        <div class="bit active" style="opacity:0.4"></div>
+        <div class="bit active" style="opacity:0.4"></div>
+        <div class="bit active" style="opacity:0.4"></div>
+        <div class="bit active" style="opacity:0.4"></div>
+        <div class="bit active" style="opacity:0.4"></div>
+        <div class="bit active" style="opacity:0.4"></div>
+        <div class="bit active" style="opacity:0.4"></div><!-- exponent ×8 -->
+        <div class="bit" style="opacity:0.2"></div>
+        <div class="bit" style="opacity:0.2"></div>
+        <div class="bit" style="opacity:0.2"></div>
+        <div class="bit" style="opacity:0.2"></div>
+        <div class="bit" style="opacity:0.2"></div>
+        <div class="bit" style="opacity:0.2"></div>
+        <div class="bit" style="opacity:0.2"></div>
+        <div class="bit" style="opacity:0.2"></div><!-- mantissa ×8 -->
+        <span class="bit-label">IEEE 754</span>
+      </div>
+      <div class="code-block">
+        <div class="code-line"><span class="ty">float</span> <span class="id">pi</span> <span class="op">=</span> <span class="val">3.14159f</span><span class="op">;</span></div>
+        <div class="code-line"><span class="ty">float</span> <span class="id">gravity</span> <span class="op">=</span> <span class="val">9.81f</span><span class="op">;</span></div>
+        <div class="code-line"><span class="ty">float</span> <span class="id">sci</span> <span class="op">=</span> <span class="val">1.5e-3f</span><span class="op">;</span></div>
+        <div class="code-line"><span class="cmt">// Suffix f required for float literals</span></div>
+      </div>
+    </div>
+
+    <!-- double -->
+    <div class="card card-float">
+      <div class="card-header">
+        <div class="type-name">double</div>
+        <div class="meta">
+          <div class="meta-row">
+            <span class="byte-badge">8 bytes · 64 bits</span>
+            <span class="category-tag">Floating-Point</span>
+          </div>
+          <div class="range-label">Approximate range</div>
+          <div class="range-val">±5 × 10⁻³²⁴ &nbsp;to&nbsp; ±1.8 × 10³⁰⁸ &nbsp;(~15–16 sig. digits)</div>
+        </div>
+      </div>
+      <div class="bit-bar">
+        <div class="bit active"></div>
+        <div class="bit active" style="opacity:0.4"></div>
+        <div class="bit active" style="opacity:0.4"></div>
+        <div class="bit active" style="opacity:0.4"></div>
+        <div class="bit active" style="opacity:0.4"></div>
+        <div class="bit active" style="opacity:0.4"></div>
+        <div class="bit active" style="opacity:0.4"></div>
+        <div class="bit active" style="opacity:0.4"></div>
+        <div class="bit active" style="opacity:0.4"></div>
+        <div class="bit active" style="opacity:0.4"></div>
+        <div class="bit active" style="opacity:0.4"></div>
+        <div class="bit"></div><div class="bit"></div><div class="bit"></div>
+        <div class="bit"></div><div class="bit"></div>
+        <span class="bit-label">IEEE 754 double</span>
+      </div>
+      <div class="code-block">
+        <div class="code-line"><span class="ty">double</span> <span class="id">pi</span> <span class="op">=</span> <span class="val">3.141592653589793</span><span class="op">;</span></div>
+        <div class="code-line"><span class="ty">double</span> <span class="id">price</span> <span class="op">=</span> <span class="val">19.99</span><span class="op">;</span></div>
+        <div class="code-line"><span class="ty">double</span> <span class="id">inf</span> <span class="op">=</span> <span class="val">1.0</span> <span class="op">/</span> <span class="val">0.0</span><span class="op">;</span> <span class="cmt">// Infinity</span></div>
+        <div class="code-line"><span class="cmt">// Default decimal type in Java</span></div>
+      </div>
+    </div>
+
+    <!-- char -->
+    <div class="card card-text">
+      <div class="card-header">
+        <div class="type-name">char</div>
+        <div class="meta">
+          <div class="meta-row">
+            <span class="byte-badge">2 bytes · 16 bits</span>
+            <span class="category-tag">Character</span>
+          </div>
+          <div class="range-label">Value range</div>
+          <div class="range-val">\u0000 (0) &nbsp;to&nbsp; \uFFFF (65,535) — Unicode BMP</div>
+        </div>
+      </div>
+      <div class="bit-bar">
+        <div class="bit"></div><div class="bit"></div><div class="bit"></div><div class="bit"></div>
+        <div class="bit"></div><div class="bit"></div><div class="bit"></div><div class="bit"></div>
+        <div class="bit active" style="opacity:0.5"></div>
+        <div class="bit active" style="opacity:0.5"></div>
+        <div class="bit active" style="opacity:0.5"></div>
+        <div class="bit active" style="opacity:0.5"></div>
+        <div class="bit active" style="opacity:0.5"></div>
+        <div class="bit active" style="opacity:0.5"></div>
+        <div class="bit active" style="opacity:0.5"></div>
+        <div class="bit active" style="opacity:0.5"></div>
+        <span class="bit-label">Unsigned 16-bit</span>
+      </div>
+      <div class="code-block">
+        <div class="code-line"><span class="ty">char</span> <span class="id">letter</span> <span class="op">=</span> <span class="str">'A'</span><span class="op">;</span></div>
+        <div class="code-line"><span class="ty">char</span> <span class="id">newline</span> <span class="op">=</span> <span class="str">'\n'</span><span class="op">;</span></div>
+        <div class="code-line"><span class="ty">char</span> <span class="id">euro</span> <span class="op">=</span> <span class="str">'\u20AC'</span><span class="op">;</span> <span class="cmt">// €</span></div>
+        <div class="code-line"><span class="cmt">// Single quotes only; unsigned type</span></div>
+      </div>
+    </div>
+
+    <!-- boolean -->
+    <div class="card card-bool">
+      <div class="card-header">
+        <div class="type-name">boolean</div>
+        <div class="meta">
+          <div class="meta-row">
+            <span class="byte-badge">JVM-dependent*</span>
+            <span class="category-tag">Boolean</span>
+          </div>
+          <div class="range-label">Valid values</div>
+          <div class="range-val"><strong>true</strong> &nbsp;or&nbsp; <strong>false</strong> &nbsp;— only two possible values</div>
+        </div>
+      </div>
+      <div class="bit-bar">
+        <div class="bit active" style="background: var(--accent-bool); opacity: 0.8;"></div>
+        <span class="bit-label">1 logical bit (stored as int by JVM)</span>
+      </div>
+      <div class="code-block">
+        <div class="code-line"><span class="ty">boolean</span> <span class="id">isActive</span> <span class="op">=</span> <span class="kw">true</span><span class="op">;</span></div>
+        <div class="code-line"><span class="ty">boolean</span> <span class="id">hasError</span> <span class="op">=</span> <span class="kw">false</span><span class="op">;</span></div>
+        <div class="code-line"><span class="ty">boolean</span> <span class="id">check</span> <span class="op">=</span> <span class="id">score</span> <span class="op">&gt;</span> <span class="val">90</span><span class="op">;</span></div>
+        <div class="code-line"><span class="cmt">// Cannot cast to/from numeric types</span></div>
+      </div>
+    </div>
+
+  </div><!-- /grid -->
+
+  <footer>
+    <strong>Quick notes:</strong> &nbsp;
+    All primitives are stored by <strong>value</strong> (not reference). &nbsp;·&nbsp;
+    Use <strong>L</strong> suffix for <code>long</code> literals and <strong>f</strong> suffix for <code>float</code> literals. &nbsp;·&nbsp;
+    <code>double</code> is the default decimal type; <code>int</code> is the default integer type. &nbsp;·&nbsp;
+    * <code>boolean</code> size is not precisely specified by the JLS; the JVM typically uses 32 bits for a single boolean variable and packs boolean arrays as 1 bit per element.
+  </footer>
+
+</div>
+</body>
+</html>

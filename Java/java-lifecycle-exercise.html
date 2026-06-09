@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Execution Lifecycle — Classroom Exercise</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:           #0a0d14;
+    --surface:      #111520;
+    --border:       #1e2535;
+    --dim:          #4a5568;
+    --muted:        #8892a4;
+    --bright:       #e8edf5;
+    --accent-int:   #4fc3f7;
+    --accent-float: #81c784;
+    --accent-text:  #ff8a65;
+    --accent-bool:  #ce93d8;
+    --accent-gold:  #ffd54f;
+    --syn-keyword:  #c792ea;
+    --syn-ident:    #82aaff;
+    --syn-value:    #f78c6c;
+    --syn-string:   #c3e88d;
+    --syn-comment:  #546e7a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--bright);
+    padding: 40px 24px 60px;
+    min-height: 100vh;
+  }
+
+  .page { max-width: 1040px; margin: 0 auto; }
+
+  /* ── HEADER ── */
+  header {
+    border-left: 4px solid var(--accent-int);
+    padding-left: 20px;
+    margin-bottom: 10px;
+    animation: fadeIn 0.6s ease both;
+  }
+  header .label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 6px;
+  }
+  header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(22px, 5vw, 36px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  header h1 span { color: var(--accent-int); }
+  .subtitle { font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+  /* ── INSTRUCTIONS ── */
+  .instructions {
+    margin: 24px 0 32px;
+    padding: 16px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent-bool);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.9;
+    animation: fadeIn 0.5s 0.1s ease both;
+  }
+  .instructions strong { color: var(--bright); }
+  .instructions .key {
+    display: inline-block;
+    background: rgba(206,147,216,0.12);
+    border: 1px solid rgba(206,147,216,0.3);
+    color: var(--accent-bool);
+    padding: 1px 7px;
+    border-radius: 3px;
+    font-size: 11px;
+  }
+
+  /* ── DRAG ZONE ── */
+  .zone-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 12px;
+  }
+
+  .card-pool {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    min-height: 100px;
+    padding: 16px;
+    background: rgba(0,0,0,0.2);
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    margin-bottom: 36px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .card-pool.drag-over {
+    border-color: var(--accent-int);
+    background: rgba(79,195,247,0.04);
+  }
+  .card-pool.empty-hint::after {
+    content: "All cards placed — great work!";
+    font-size: 12px;
+    color: var(--dim);
+    margin: auto;
+    pointer-events: none;
+  }
+
+  .drop-sequence {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+  }
+
+  /* ── DROP SLOT ── */
+  .drop-slot {
+    min-height: 160px;
+    border: 1px dashed var(--dim);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+  }
+  .drop-slot .slot-num {
+    position: absolute;
+    top: 8px;
+    left: 10px;
+    font-size: 11px;
+    color: var(--dim);
+    font-weight: 700;
+  }
+  .drop-slot .slot-hint {
+    font-size: 11px;
+    color: var(--dim);
+    text-align: center;
+  }
+  .drop-slot.drag-over {
+    border-color: var(--accent-float);
+    background: rgba(129,199,132,0.05);
+  }
+  .drop-slot.correct {
+    border-color: var(--accent-float);
+    background: rgba(129,199,132,0.06);
+  }
+  .drop-slot.incorrect {
+    border-color: var(--accent-text);
+    background: rgba(255,138,101,0.06);
+    animation: shake 0.35s ease;
+  }
+
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25%      { transform: translateX(-5px); }
+    75%      { transform: translateX(5px); }
+  }
+
+  /* ── STEP CARD ── */
+  .step-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: grab;
+    user-select: none;
+    transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+    width: 200px;
+    flex-shrink: 0;
+    animation: slideUp 0.4s ease both;
+  }
+  .step-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    border-color: var(--card-accent, #4fc3f7);
+  }
+  .step-card.dragging {
+    opacity: 0.4;
+    transform: scale(0.97);
+    cursor: grabbing;
+  }
+  .step-card.placed {
+    width: 100%;
+    cursor: default;
+    animation: none;
+  }
+  .step-card.placed:hover { transform: none; box-shadow: none; }
+
+  .card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px 9px;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-icon {
+    font-size: 20px;
+    line-height: 1;
+  }
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--card-accent, #4fc3f7);
+    letter-spacing: -0.01em;
+  }
+  .card-body {
+    padding: 10px 14px 12px;
+  }
+  .card-action {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--card-accent, #4fc3f7);
+    opacity: 0.7;
+    margin-bottom: 6px;
+  }
+  .card-desc {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+  .card-file {
+    margin-top: 8px;
+    padding: 5px 10px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 3px;
+    font-size: 11px;
+  }
+  .card-file .kw  { color: var(--syn-keyword); }
+  .card-file .id  { color: var(--syn-ident); }
+  .card-file .str { color: var(--syn-string); }
+  .card-file .val { color: var(--syn-value); }
+  .card-file .cmt { color: var(--syn-comment); font-style: italic; }
+  .card-file .ty  { color: var(--card-accent, #4fc3f7); }
+
+  /* accent variants */
+  .c-source  { --card-accent: #4fc3f7; }
+  .c-compile { --card-accent: #ffd54f; }
+  .c-jvm     { --card-accent: #ce93d8; }
+  .c-exec    { --card-accent: #81c784; }
+  .c-jit     { --card-accent: #ff8a65; }
+
+  /* ── CONTROLS ── */
+  .controls {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 9px 20px;
+    border-radius: 4px;
+    border: 1px solid;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+  .btn-check {
+    background: rgba(79,195,247,0.12);
+    border-color: rgba(79,195,247,0.35);
+    color: var(--accent-int);
+  }
+  .btn-check:hover {
+    background: rgba(79,195,247,0.22);
+  }
+  .btn-reset {
+    background: rgba(74,85,104,0.15);
+    border-color: var(--dim);
+    color: var(--muted);
+  }
+  .btn-reset:hover {
+    background: rgba(74,85,104,0.3);
+    color: var(--bright);
+  }
+  .btn-reveal {
+    background: rgba(255,213,79,0.1);
+    border-color: rgba(255,213,79,0.3);
+    color: var(--accent-gold);
+  }
+  .btn-reveal:hover { background: rgba(255,213,79,0.18); }
+
+  /* ── RESULT BANNER ── */
+  .result-banner {
+    display: none;
+    margin-top: 20px;
+    padding: 14px 20px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    animation: fadeIn 0.3s ease both;
+  }
+  .result-banner.success {
+    display: block;
+    background: rgba(129,199,132,0.1);
+    border: 1px solid rgba(129,199,132,0.35);
+    color: var(--accent-float);
+  }
+  .result-banner.partial {
+    display: block;
+    background: rgba(255,213,79,0.08);
+    border: 1px solid rgba(255,213,79,0.3);
+    color: var(--accent-gold);
+  }
+  .result-banner.wrong {
+    display: block;
+    background: rgba(255,138,101,0.08);
+    border: 1px solid rgba(255,138,101,0.3);
+    color: var(--accent-text);
+  }
+
+  /* ── ANSWER KEY ── */
+  .answer-key {
+    display: none;
+    margin-top: 28px;
+    padding: 18px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent-gold);
+    border-radius: 6px;
+    animation: fadeIn 0.4s ease both;
+  }
+  .answer-key h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    color: var(--accent-gold);
+    margin-bottom: 12px;
+  }
+  .answer-key ol {
+    padding-left: 18px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 2;
+  }
+  .answer-key ol li strong { color: var(--bright); }
+  .answer-key ol li span { color: var(--accent-int); }
+
+  /* ── FOOTER ── */
+  footer {
+    margin-top: 36px;
+    padding: 14px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.9;
+    animation: fadeIn 0.6s 0.5s ease both;
+  }
+  footer strong { color: var(--bright); }
+
+  @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="label">Classroom Exercise · Java Internals</div>
+    <h1>Java <span>Execution</span> Lifecycle</h1>
+    <p class="subtitle">Drag the steps into the correct execution order — from source code to machine code.</p>
+  </header>
+
+  <div class="instructions">
+    <strong>Instructions:</strong> The five cards below represent the steps of the Java execution lifecycle, but they've been <span class="key">scrambled</span>. Drag each card into the numbered drop slot that matches the correct order. When you're ready, click <strong>Check Order</strong> to see how you did. <br>
+    <em style="color:var(--dim)">Hint: Think about what a developer must do before a program can run on any machine.</em>
+  </div>
+
+  <!-- CARD POOL -->
+  <div class="zone-label">// step cards — drag from here</div>
+  <div class="card-pool" id="pool"
+       ondragover="onDragOverZone(event)"
+       ondrop="onDropPool(event)">
+  </div>
+
+  <!-- DROP SLOTS -->
+  <div class="zone-label">// drop zone — arrange in order</div>
+  <div class="drop-sequence" id="slots"></div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <button class="btn btn-check" onclick="checkOrder()">▶ Check Order</button>
+    <button class="btn btn-reset" onclick="resetExercise()">↺ Reset</button>
+    <button class="btn btn-reveal" onclick="toggleAnswer()">⚑ Reveal Answer</button>
+  </div>
+
+  <div class="result-banner" id="result"></div>
+
+  <div class="answer-key" id="answerKey">
+    <h3>// answer_key.java</h3>
+    <ol>
+      <li><strong>Source Code</strong> — <span>developer writes .java files</span></li>
+      <li><strong>Compilation (javac)</strong> — <span>developer runs javac → produces .class bytecode</span></li>
+      <li><strong>JVM Loads Bytecode</strong> — <span>JVM/HotSpot reads and verifies .class files</span></li>
+      <li><strong>Bytecode Interpretation</strong> — <span>JVM interprets & executes bytecode line-by-line</span></li>
+      <li><strong>JIT Compilation</strong> — <span>JVM JIT-compiles hot paths to native machine code</span></li>
+    </ol>
+  </div>
+
+  <footer>
+    <strong>Java Execution Stack:</strong> .java → javac (AOT compile) → .class bytecode → JVM (HotSpot, written in C++) → interpreter → JIT → native machine code &nbsp;|&nbsp;
+    <strong>Compare:</strong> Python uses PVM + C libraries; Java uses JVM + JIT for raw machine code performance.
+  </footer>
+
+</div>
+
+<script>
+  // ── DATA ──
+  const STEPS = [
+    {
+      id: 'source',
+      order: 1,
+      cls: 'c-source',
+      icon: '📝',
+      title: 'Source Code',
+      action: 'Developer Action: Write',
+      desc: 'You author human-readable Java source files in your IDE or text editor.',
+      code: '<span class="kw">public class</span> <span class="ty">Main</span> {<br>&nbsp;&nbsp;<span class="kw">public static void</span> <span class="id">main</span>(<span class="ty">String</span>[] <span class="id">args</span>) {<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="cmt">// your code here</span><br>&nbsp;&nbsp;}<br>}',
+      file: 'Main<span class="ty">.java</span>'
+    },
+    {
+      id: 'compile',
+      order: 2,
+      cls: 'c-compile',
+      icon: '⚙️',
+      title: 'Compile (javac)',
+      action: 'Developer Action: Build',
+      desc: 'You invoke the javac compiler. It performs Ahead-of-Time compilation on your source.',
+      code: '<span class="str">$</span> <span class="id">javac</span> Main.java<br><span class="cmt">// → produces bytecode</span><br><span class="cmt">// Ahead-of-Time / Explicit</span>',
+      file: 'Main<span class="ty">.class</span> <span class="cmt">(bytecode)</span>'
+    },
+    {
+      id: 'jvm',
+      order: 3,
+      cls: 'c-jvm',
+      icon: '🖥️',
+      title: 'JVM Loads Bytecode',
+      action: 'Runtime Action: Load',
+      desc: 'The Java Virtual Machine (HotSpot, written in C++) reads and verifies the .class files.',
+      code: '<span class="str">$</span> <span class="id">java</span> Main<br><span class="cmt">// JVM / HotSpot starts</span><br><span class="cmt">// loads + verifies .class</span>',
+      file: '<span class="ty">JVM</span> <span class="cmt">(written in C++)</span>'
+    },
+    {
+      id: 'interpret',
+      order: 4,
+      cls: 'c-exec',
+      icon: '▶️',
+      title: 'Bytecode Execution',
+      action: 'Runtime Action: Execute',
+      desc: 'The JVM interpreter walks the bytecode, executing each instruction. Your program runs.',
+      code: '<span class="cmt">// JVM interpreter loop</span><br><span class="kw">while</span> (<span class="id">hasNextInstruction</span>()) {<br>&nbsp;&nbsp;<span class="id">execute</span>(<span class="id">nextBytecode</span>());<br>}',
+      file: '<span class="ty">Bytecode</span> → <span class="cmt">interpreted</span>'
+    },
+    {
+      id: 'jit',
+      order: 5,
+      cls: 'c-jit',
+      icon: '⚡',
+      title: 'JIT Compilation',
+      action: 'Runtime Action: Optimize',
+      desc: 'Hot bytecode paths are dynamically compiled to native machine code by the JIT, bypassing the interpreter.',
+      code: '<span class="cmt">// HotSpot detects hot loops</span><br><span class="id">jit</span>.<span class="id">compile</span>(<span class="id">hotMethod</span>);<br><span class="cmt">// → raw native machine code</span><br><span class="cmt">// no more interpretation</span>',
+      file: '<span class="ty">Native</span> <span class="cmt">machine code</span>'
+    }
+  ];
+
+  // ── STATE ──
+  let placed = {}; // slotIndex (1-5) → step id
+  let answerVisible = false;
+  let dragId = null;
+  let dragFrom = null; // 'pool' | slot number
+
+  // ── BUILD CARD HTML ──
+  function buildCard(step, inSlot) {
+    return `
+      <div class="step-card ${step.cls}${inSlot ? ' placed' : ''}"
+           id="card-${step.id}"
+           draggable="true"
+           ondragstart="onDragStart(event,'${step.id}',${inSlot ? inSlot : "'pool'"})"
+           ondragend="onDragEnd(event)">
+        <div class="card-head">
+          <span class="card-icon">${step.icon}</span>
+          <span class="card-title">${step.title}</span>
+        </div>
+        <div class="card-body">
+          <div class="card-action">${step.action}</div>
+          <div class="card-desc">${step.desc}</div>
+          <div class="card-file">
+            <code>${step.code}</code>
+          </div>
+          <div class="card-file" style="margin-top:6px;color:var(--muted);font-size:10px;">
+            📁 ${step.file}
+          </div>
+        </div>
+      </div>`;
+  }
+
+  // ── RENDER ──
+  function render() {
+    const pool = document.getElementById('pool');
+    const slotsEl = document.getElementById('slots');
+
+    // build placed set
+    const placedIds = new Set(Object.values(placed));
+
+    // pool: unplaced cards
+    const unplaced = STEPS.filter(s => !placedIds.has(s.id));
+    pool.innerHTML = unplaced.map(s => buildCard(s, false)).join('');
+    pool.classList.toggle('empty-hint', unplaced.length === 0);
+
+    // slots
+    slotsEl.innerHTML = '';
+    for (let i = 1; i <= 5; i++) {
+      const sid = placed[i];
+      const step = sid ? STEPS.find(s => s.id === sid) : null;
+      const slotDiv = document.createElement('div');
+      slotDiv.className = 'drop-slot';
+      slotDiv.id = `slot-${i}`;
+      slotDiv.setAttribute('ondragover', `onDragOverSlot(event,${i})`);
+      slotDiv.setAttribute('ondrop', `onDropSlot(event,${i})`);
+      slotDiv.innerHTML = `<span class="slot-num">STEP ${i}</span>`;
+      if (step) {
+        slotDiv.innerHTML += buildCard(step, i);
+      } else {
+        slotDiv.innerHTML += `<span class="slot-hint">Drop here</span>`;
+      }
+      slotsEl.appendChild(slotDiv);
+    }
+  }
+
+  // ── DRAG HANDLERS ──
+  function onDragStart(e, id, from) {
+    dragId = id;
+    dragFrom = from;
+    setTimeout(() => {
+      const el = document.getElementById('card-' + id);
+      if (el) el.classList.add('dragging');
+    }, 0);
+    e.dataTransfer.effectAllowed = 'move';
+  }
+  function onDragEnd(e) {
+    const el = document.getElementById('card-' + dragId);
+    if (el) el.classList.remove('dragging');
+  }
+  function onDragOverSlot(e, i) {
+    e.preventDefault();
+    document.getElementById('slot-'+i).classList.add('drag-over');
+  }
+  function onDragOverZone(e) {
+    e.preventDefault();
+    document.getElementById('pool').classList.add('drag-over');
+  }
+  function onDropSlot(e, targetSlot) {
+    e.preventDefault();
+    document.getElementById('slot-'+targetSlot).classList.remove('drag-over');
+    if (!dragId) return;
+
+    // if something already in target slot, swap or send to pool
+    const existingId = placed[targetSlot];
+
+    // remove dragId from wherever it was
+    if (dragFrom !== 'pool') {
+      delete placed[dragFrom];
+    }
+
+    // if target has a card, send it back to pool (just remove from placed)
+    if (existingId && existingId !== dragId) {
+      // existingId goes back to pool — already removed by deleting placed[targetSlot] below
+    }
+
+    placed[targetSlot] = dragId;
+    dragId = null;
+    dragFrom = null;
+    clearFeedback();
+    render();
+  }
+  function onDropPool(e) {
+    e.preventDefault();
+    document.getElementById('pool').classList.remove('drag-over');
+    if (!dragId || dragFrom === 'pool') return;
+    if (dragFrom !== 'pool') {
+      delete placed[dragFrom];
+    }
+    dragId = null;
+    dragFrom = null;
+    clearFeedback();
+    render();
+  }
+
+  // remove drag-over on leave
+  document.addEventListener('dragleave', (e) => {
+    if (e.target.classList.contains('drop-slot')) {
+      e.target.classList.remove('drag-over');
+    }
+    if (e.target.classList.contains('card-pool')) {
+      e.target.classList.remove('drag-over');
+    }
+  });
+
+  // ── CHECK ──
+  function checkOrder() {
+    // check all 5 filled
+    let filled = 0, correct = 0;
+    for (let i = 1; i <= 5; i++) {
+      const sid = placed[i];
+      if (!sid) continue;
+      filled++;
+      const step = STEPS.find(s => s.id === sid);
+      const slotEl = document.getElementById('slot-'+i);
+      slotEl.classList.remove('correct','incorrect');
+      if (step.order === i) {
+        correct++;
+        slotEl.classList.add('correct');
+      } else {
+        slotEl.classList.add('incorrect');
+      }
+    }
+
+    const banner = document.getElementById('result');
+    banner.className = 'result-banner';
+    if (filled < 5) {
+      banner.classList.add('partial');
+      banner.textContent = `⚠  Place all 5 cards before checking! (${filled}/5 placed)`;
+    } else if (correct === 5) {
+      banner.classList.add('success');
+      banner.textContent = `✓  Perfect! All 5 steps are in the correct order. You understand the Java execution lifecycle!`;
+    } else if (correct >= 3) {
+      banner.classList.add('partial');
+      banner.textContent = `◑  ${correct}/5 correct. Almost there — check the highlighted slots and try again.`;
+    } else {
+      banner.classList.add('wrong');
+      banner.textContent = `✗  ${correct}/5 correct. Review the Java execution flow and try again!`;
+    }
+  }
+
+  function clearFeedback() {
+    document.getElementById('result').className = 'result-banner';
+    for (let i = 1; i <= 5; i++) {
+      const el = document.getElementById('slot-'+i);
+      if (el) el.classList.remove('correct','incorrect');
+    }
+  }
+
+  // ── RESET ──
+  function resetExercise() {
+    placed = {};
+    clearFeedback();
+    answerVisible = false;
+    document.getElementById('answerKey').style.display = 'none';
+    render();
+  }
+
+  // ── REVEAL ANSWER ──
+  function toggleAnswer() {
+    answerVisible = !answerVisible;
+    document.getElementById('answerKey').style.display = answerVisible ? 'block' : 'none';
+  }
+
+  // ── INIT: scramble ──
+  function init() {
+    // scrambled order (not the correct 1-5)
+    const scrambled = [3, 5, 1, 4, 2];
+    // don't pre-place, just render pool with shuffled display
+    // shuffle the STEPS array display order in pool by reordering
+    STEPS.sort((a,b) => scrambled.indexOf(a.order) - scrambled.indexOf(b.order));
+    render();
+  }
+
+  init();
+</script>
+</body>
+</html>

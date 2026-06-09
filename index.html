@@ -5,421 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>R.G. Seeds — rseeds-aco</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg:           #0a0d14;
-    --surface:      #111520;
-    --border:       #1e2535;
-    --dim:          #4a5568;
-    --muted:        #8892a4;
-    --bright:       #e8edf5;
-    --accent-int:   #4fc3f7;
-    --accent-float: #81c784;
-    --accent-text:  #ff8a65;
-    --accent-bool:  #ce93d8;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--bg);
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--bright);
-    min-height: 100vh;
-  }
-
-  a { color: inherit; text-decoration: none; }
-
-  /* ── NAV ── */
-  nav {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: rgba(10,13,20,0.92);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 0;
-    padding: 0 32px;
-    height: 52px;
-  }
-
-  .nav-brand {
-    font-family: 'Syne', sans-serif;
-    font-size: 15px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    color: var(--bright);
-    margin-right: auto;
-  }
-  .nav-brand span { color: var(--accent-int); }
-
-  .nav-links {
-    display: flex;
-    gap: 4px;
-  }
-
-  .nav-links a {
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    padding: 6px 14px;
-    border-radius: 3px;
-    transition: color 0.15s, background 0.15s;
-  }
-  .nav-links a:hover {
-    color: var(--accent-int);
-    background: rgba(79,195,247,0.07);
-  }
-
-  /* ── HERO ── */
-  .hero {
-    position: relative;
-    width: 100%;
-    background: linear-gradient(180deg, #0d1018 0%, var(--bg) 100%);
-    border-bottom: 1px solid var(--border);
-    overflow: hidden;
-  }
-
-  .hero-image-wrap {
-    width: 100%;
-    max-height: 420px;
-    overflow: hidden;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    position: relative;
-  }
-
-  .hero-image-wrap img {
-    width: 100%;
-    max-width: 900px;
-    display: block;
-    margin: 0 auto;
-  }
-
-  /* Fade bottom edge into page bg */
-  .hero-image-wrap::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 80px;
-    background: linear-gradient(transparent, var(--bg));
-    pointer-events: none;
-  }
-
-  .hero-text {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 0 32px 48px;
-    position: relative;
-    z-index: 2;
-    margin-top: -20px;
-  }
-
-  .hero-label {
-    font-size: 10px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--dim);
-    margin-bottom: 10px;
-  }
-
-  .hero-name {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(32px, 6vw, 56px);
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: 1;
-    margin-bottom: 14px;
-  }
-  .hero-name span { color: var(--accent-int); }
-
-  .hero-tagline {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.7;
-    max-width: 560px;
-    margin-bottom: 24px;
-  }
-
-  .hero-meta {
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-  }
-
-  .hero-meta-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
-    color: var(--dim);
-  }
-  .hero-meta-item .dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  /* ── SCAN-LINE TICKER ── */
-  .ticker {
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    overflow: hidden;
-    height: 30px;
-    display: flex;
-    align-items: center;
-  }
-
-  .ticker-inner {
-    display: flex;
-    gap: 0;
-    animation: scroll-x 28s linear infinite;
-    white-space: nowrap;
-  }
-
-  .ticker-inner span {
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    padding: 0 32px;
-    color: var(--dim);
-  }
-
-  .ticker-inner .hi { color: var(--accent-int); }
-
-  @keyframes scroll-x {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
-  }
-
-  /* ── MAIN CONTENT ── */
-  .page {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 56px 32px 80px;
-  }
-
-  /* ── SECTION HEADERS ── */
-  .section-label {
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--dim);
-    margin-bottom: 6px;
-  }
-
-  .section-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 22px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    border-left: 3px solid var(--accent-int);
-    padding-left: 16px;
-    margin-bottom: 28px;
-    line-height: 1.2;
-  }
-  .section-title span { color: var(--accent-int); }
-
-  section { margin-bottom: 64px; }
-
-  /* ── TOPIC GRID ── */
-  .topic-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 14px;
-  }
-
-  .topic-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    overflow: hidden;
-    transition: border-color 0.2s, transform 0.2s;
-    animation: slideUp 0.5s ease both;
-    cursor: pointer;
-  }
-
-  .topic-card:hover {
-    transform: translateY(-2px);
-    border-color: var(--card-accent, var(--accent-int));
-  }
-
-  .topic-card:nth-child(1)  { animation-delay: 0.05s; }
-  .topic-card:nth-child(2)  { animation-delay: 0.10s; }
-  .topic-card:nth-child(3)  { animation-delay: 0.15s; }
-  .topic-card:nth-child(4)  { animation-delay: 0.20s; }
-  .topic-card:nth-child(5)  { animation-delay: 0.25s; }
-  .topic-card:nth-child(6)  { animation-delay: 0.30s; }
-  .topic-card:nth-child(7)  { animation-delay: 0.35s; }
-  .topic-card:nth-child(8)  { animation-delay: 0.40s; }
-  .topic-card:nth-child(9)  { animation-delay: 0.45s; }
-  .topic-card:nth-child(10) { animation-delay: 0.50s; }
-  .topic-card:nth-child(11) { animation-delay: 0.55s; }
-  .topic-card:nth-child(12) { animation-delay: 0.60s; }
-
-  .topic-card-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 16px 10px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .topic-icon {
-    width: 32px; height: 32px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 15px;
-    flex-shrink: 0;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.06);
-  }
-
-  .topic-name {
-    font-family: 'Syne', sans-serif;
-    font-size: 14px;
-    font-weight: 800;
-    letter-spacing: -0.01em;
-    color: var(--card-accent, var(--accent-int));
-  }
-
-  .topic-sub {
-    font-size: 9px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--dim);
-    margin-top: 1px;
-  }
-
-  .topic-body {
-    padding: 10px 16px 14px;
-    font-size: 11px;
-    color: var(--muted);
-    line-height: 1.7;
-  }
-
-  .topic-footer {
-    padding: 8px 16px;
-    background: rgba(0,0,0,0.2);
-    font-size: 10px;
-    color: var(--dim);
-    display: flex;
-    gap: 6px;
-    align-items: center;
-  }
-
-  .topic-footer .badge {
-    font-size: 9px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 2px 8px;
-    border-radius: 2px;
-    background: rgba(79,195,247,0.08);
-    color: var(--card-accent, var(--accent-int));
-    border: 1px solid rgba(79,195,247,0.15);
-  }
-
-  /* Card accent colors */
-  .c-blue   { --card-accent: var(--accent-int);   }
-  .c-green  { --card-accent: var(--accent-float); }
-  .c-orange { --card-accent: var(--accent-text);  }
-  .c-purple { --card-accent: var(--accent-bool);  }
-
-  /* ── ABOUT STRIP ── */
-  .about-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-  }
-
-  .about-panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 22px 24px;
-  }
-
-  .about-panel h3 {
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 800;
-    letter-spacing: -0.01em;
-    color: var(--accent-int);
-    margin-bottom: 14px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-  }
-
-  .about-panel p {
-    font-size: 11px;
-    color: var(--muted);
-    line-height: 1.8;
-  }
-
-  .stack-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 4px;
-  }
-
-  .tag {
-    font-size: 10px;
-    letter-spacing: 0.08em;
-    padding: 3px 10px;
-    border-radius: 2px;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    background: rgba(255,255,255,0.03);
-  }
-  .tag.t-blue   { color: var(--accent-int);   border-color: rgba(79,195,247,0.2);  background: rgba(79,195,247,0.05); }
-  .tag.t-green  { color: var(--accent-float); border-color: rgba(129,199,132,0.2); background: rgba(129,199,132,0.05); }
-  .tag.t-orange { color: var(--accent-text);  border-color: rgba(255,138,101,0.2); background: rgba(255,138,101,0.05); }
-  .tag.t-purple { color: var(--accent-bool);  border-color: rgba(206,147,216,0.2); background: rgba(206,147,216,0.05); }
-
-  /* ── FOOTER ── */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 24px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 10px;
-    color: var(--dim);
-    letter-spacing: 0.1em;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  footer a { color: var(--accent-int); }
-  footer a:hover { text-decoration: underline; }
-
-  /* ── ANIMATIONS ── */
-  @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-
-  .hero      { animation: fadeIn 0.7s ease both; }
-  .page      { animation: fadeIn 0.5s 0.2s ease both; }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 640px) {
-    .about-grid { grid-template-columns: 1fr; }
-    .topic-grid { grid-template-columns: 1fr; }
-    nav { padding: 0 16px; }
-    .page { padding: 40px 16px 60px; }
-    .hero-text { padding: 0 16px 40px; }
-    .nav-links { display: none; }
-  }
-</style>
+<link rel="stylesheet" href="./styles.css">
 </head>
 <body>
 
@@ -444,7 +30,7 @@
     <h1 class="hero-name">R.G. <span>Seeds</span></h1>
     <p class="hero-tagline">
       Software instructor &amp; technologist. Teaching the next generation of developers<br>
-      through the Apprenti Program — one <code style="color:var(--accent-int);font-size:12px;">System.out.println()</code> at a time.
+      one <code style="color:var(--accent-int);font-size:12px;">System.out.println()</code> at a time.
     </p>
     <div class="hero-meta">
       <div class="hero-meta-item">
@@ -453,7 +39,7 @@
       </div>
       <div class="hero-meta-item">
         <span class="dot" style="background:var(--accent-int)"></span>
-        Apprenti Instructor
+        Software Instructor
       </div>
       <div class="hero-meta-item">
         <span class="dot" style="background:var(--accent-bool)"></span>
@@ -473,7 +59,7 @@
     <span class="hi">·</span>
     <span>teaching &amp; mentorship</span>
     <span class="hi">·</span>
-    <span>apprenti program</span>
+    <span>career development</span>
     <span class="hi">·</span>
     <span>object-oriented programming</span>
     <span class="hi">·</span>
@@ -491,7 +77,7 @@
     <span class="hi">·</span>
     <span>teaching &amp; mentorship</span>
     <span class="hi">·</span>
-    <span>apprenti program</span>
+    <span>career development</span>
     <span class="hi">·</span>
     <span>object-oriented programming</span>
     <span class="hi">·</span>
@@ -518,6 +104,26 @@
 
     <div class="topic-grid">
 
+      <!-- Java Execution Lifecycle — LIVE -->
+      <a href="./Java/java-lifecycle-exercise.html" class="topic-card c-green">
+        <div class="topic-card-header">
+          <div class="topic-icon">⚙️</div>
+          <div>
+            <div class="topic-name">Java Lifecycle</div>
+            <div class="topic-sub">Execution &amp; Development Pipeline</div>
+          </div>
+        </div>
+        <div class="topic-body">
+          Write → Compile → Load → Execute. How Java source becomes bytecode,
+          how the JVM loads and runs it, and the full development pipeline.
+        </div>
+        <div class="topic-footer">
+          <span class="badge">java</span>
+          <span class="badge">jvm</span>
+          <span class="badge">exercise</span>
+        </div>
+      </a>
+
       <!-- Java Primitives — LIVE -->
       <a href="./Java/java-primitives.html" class="topic-card c-blue">
         <div class="topic-card-header">
@@ -538,23 +144,23 @@
         </div>
       </a>
 
-      <!-- Java Execution Lifecycle — LIVE -->
-      <a href="./Java/java-lifecycle-exercise.html" class="topic-card c-green">
+      <!-- Java Variables — LIVE -->
+      <a href="./Java/java-variables.html" class="topic-card c-purple">
         <div class="topic-card-header">
-          <div class="topic-icon">⚙️</div>
+          <div class="topic-icon">📦</div>
           <div>
-            <div class="topic-name">Java Lifecycle</div>
-            <div class="topic-sub">Execution &amp; Development Pipeline</div>
+            <div class="topic-name">Java Variables</div>
+            <div class="topic-sub">Declaration, Assignment &amp; Naming</div>
           </div>
         </div>
         <div class="topic-body">
-          Write → Compile → Load → Execute. How Java source becomes bytecode,
-          how the JVM loads and runs it, and the full development pipeline.
+          Syntax anatomy of declarations, first assignment vs. reassignment,
+          and Java naming conventions — camelCase, constants, and what to avoid.
         </div>
         <div class="topic-footer">
           <span class="badge">java</span>
-          <span class="badge">jvm</span>
-          <span class="badge">exercise</span>
+          <span class="badge">variables</span>
+          <span class="badge">naming</span>
         </div>
       </a>
 
@@ -723,10 +329,10 @@
           </div>
         </div>
         <div class="topic-body">
-          Hands-on projects, coding exercises, and capstone work from the Apprenti program.
+          Hands-on projects, coding exercises, and capstone work from the course.
         </div>
         <div class="topic-footer">
-          <span class="badge">apprenti</span>
+          <span class="badge">projects</span>
           <span class="badge">portfolio</span>
         </div>
       </a>
@@ -815,7 +421,7 @@
 <footer>
   <div>
     <span style="color:var(--accent-int)">R.G. Seeds</span> &nbsp;·&nbsp;
-    Apprenti Instructor &nbsp;·&nbsp;
+    Software Instructor &nbsp;·&nbsp;
     <a href="https://linkedin.com/in/rgseeds" target="_blank">linkedin.com/in/rgseeds</a>
     &nbsp;·&nbsp;
     <a href="https://github.com/rseeds-aco" target="_blank">github.com/rseeds-aco</a>

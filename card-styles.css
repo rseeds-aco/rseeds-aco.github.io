@@ -1,0 +1,783 @@
+/* ==========================================================================
+   card-styles.css
+   Shared stylesheet for all Java card/topic pages (Java subfolder).
+   Sections:
+     1. Root variables
+     2. Reset & base
+     3. Header
+     4. Home link
+     5. Category badges (shared)
+     6. Section headers (variables page)
+     7. Card grid & cards (shared)
+     8. Card accent variants (shared + page-specific)
+     9. Code blocks & syntax tokens (shared)
+    10. Footer (shared)
+    11. Animations (shared)
+    12. Primitives page — unique components
+    13. Variables page — unique components
+    14. Lifecycle exercise page — unique components
+   ========================================================================== */
+
+
+/* ── 1. ROOT VARIABLES ── */
+:root {
+  --bg:           #0a0d14;
+  --surface:      #111520;
+  --border:       #1e2535;
+  --dim:          #4a5568;
+  --muted:        #8892a4;
+  --bright:       #e8edf5;
+  --accent-int:   #4fc3f7;
+  --accent-float: #81c784;
+  --accent-text:  #ff8a65;
+  --accent-bool:  #ce93d8;
+  --accent-gold:  #ffd54f;
+  --syn-keyword:  #c792ea;
+  --syn-ident:    #82aaff;
+  --syn-value:    #f78c6c;
+  --syn-string:   #c3e88d;
+  --syn-comment:  #546e7a;
+}
+
+
+/* ── 2. RESET & BASE ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--bright);
+  min-height: 100vh;
+  padding: 40px 24px 60px;
+}
+
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+
+/* ── 3. HEADER ── */
+header {
+  margin-bottom: 40px;
+  border-left: 4px solid var(--accent-int);
+  padding-left: 20px;
+  animation: fadeIn 0.6s ease both;
+}
+
+header .label {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 6px;
+}
+
+header h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(24px, 5vw, 40px);
+  font-weight: 800;
+  color: var(--bright);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+header h1 span { color: var(--accent-int); }
+
+.subtitle {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+
+/* ── 4. HOME LINK ── */
+.home-link {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--accent-int);
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  opacity: 0.8;
+}
+.home-link:hover { opacity: 1; }
+
+
+/* ── 5. CATEGORY BADGES ── */
+.category-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  animation: fadeIn 0.6s 0.1s ease both;
+}
+
+.cat-badge {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 2px;
+  font-weight: 700;
+}
+
+/* Primitives page badge colors */
+.cat-integer  { background: rgba(79,195,247,0.12);  color: var(--accent-int);   border: 1px solid rgba(79,195,247,0.25); }
+.cat-floating { background: rgba(129,199,132,0.12); color: var(--accent-float); border: 1px solid rgba(129,199,132,0.25); }
+.cat-text     { background: rgba(255,138,101,0.12); color: var(--accent-text);  border: 1px solid rgba(255,138,101,0.25); }
+.cat-bool     { background: rgba(206,147,216,0.12); color: var(--accent-bool);  border: 1px solid rgba(206,147,216,0.25); }
+
+/* Variables page badge colors */
+.cat-decl   { background: rgba(79,195,247,0.12);  color: var(--accent-int);   border: 1px solid rgba(79,195,247,0.25); }
+.cat-assign { background: rgba(129,199,132,0.12); color: var(--accent-float); border: 1px solid rgba(129,199,132,0.25); }
+.cat-naming { background: rgba(255,213,79,0.12);  color: var(--accent-gold);  border: 1px solid rgba(255,213,79,0.25); }
+
+
+/* ── 6. SECTION HEADERS (variables page) ── */
+.section-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 6px;
+}
+
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  border-left: 3px solid var(--accent-int);
+  padding-left: 14px;
+  margin-bottom: 20px;
+  color: var(--bright);
+}
+.section-title span { color: var(--accent-int); }
+
+section { margin-bottom: 52px; animation: fadeIn 0.5s ease both; }
+
+
+/* ── 7. CARD GRID & CARDS ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: 14px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  animation: slideUp 0.5s ease both;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: var(--card-accent, var(--accent-int));
+}
+
+.card:nth-child(1) { animation-delay: 0.05s; }
+.card:nth-child(2) { animation-delay: 0.10s; }
+.card:nth-child(3) { animation-delay: 0.15s; }
+.card:nth-child(4) { animation-delay: 0.20s; }
+.card:nth-child(5) { animation-delay: 0.25s; }
+.card:nth-child(6) { animation-delay: 0.30s; }
+.card:nth-child(7) { animation-delay: 0.35s; }
+.card:nth-child(8) { animation-delay: 0.40s; }
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+
+/* ── 8. CARD ACCENT VARIANTS ── */
+/* Shared */
+.card-int   { --card-accent: var(--accent-int);   }
+.card-float { --card-accent: var(--accent-float); }
+.card-bool  { --card-accent: var(--accent-bool);  }
+
+/* Primitives page */
+.card-text  { --card-accent: var(--accent-text);  }
+
+/* Variables page */
+.card-orange { --card-accent: var(--accent-text);  }
+.card-gold   { --card-accent: var(--accent-gold);  }
+
+/* Lifecycle exercise page */
+.c-source  { --card-accent: #4fc3f7; }
+.c-compile { --card-accent: #ffd54f; }
+.c-jvm     { --card-accent: #ce93d8; }
+.c-exec    { --card-accent: #81c784; }
+.c-jit     { --card-accent: #ff8a65; }
+
+
+/* ── 9. CODE BLOCKS & SYNTAX TOKENS ── */
+.code-block {
+  padding: 12px 18px;
+  background: rgba(0,0,0,0.25);
+}
+
+.code-line {
+  font-size: 12px;
+  line-height: 1.9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kw  { color: #c792ea; }                              /* keyword  */
+.ty  { color: var(--card-accent, var(--accent-int)); } /* type     */
+.id  { color: #82aaff; }                              /* identifier */
+.op  { color: var(--dim); }                           /* operator */
+.val { color: #f78c6c; }                              /* value    */
+.str { color: #c3e88d; }                              /* string / char */
+.cmt { color: #546e7a; font-style: italic; }          /* comment  */
+
+
+/* ── 10. FOOTER (shared) ── */
+footer {
+  margin-top: 32px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.9;
+  animation: fadeIn 0.6s 0.5s ease both;
+}
+footer strong { color: var(--bright); }
+footer code   { color: var(--accent-bool); }
+
+
+/* ── 11. ANIMATIONS ── */
+@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+
+/* ==========================================================================
+   12. PRIMITIVES PAGE — unique components
+   ========================================================================== */
+
+.type-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--card-accent, #4fc3f7);
+  letter-spacing: -0.02em;
+  min-width: 70px;
+}
+
+.meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.meta-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.byte-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.05);
+  color: var(--card-accent, #4fc3f7);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.category-tag {
+  font-size: 10px;
+  color: var(--dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.range-label {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+
+.range-val {
+  font-size: 11px;
+  color: var(--bright);
+  opacity: 0.85;
+  line-height: 1.4;
+}
+
+/* Bit bar */
+.bit-bar {
+  display: flex;
+  gap: 2px;
+  padding: 10px 18px 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.bit {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.04);
+  flex-shrink: 0;
+}
+
+.bit.active {
+  background: var(--card-accent, #4fc3f7);
+  opacity: 0.7;
+  border-color: transparent;
+}
+
+.bit-label {
+  font-size: 9px;
+  color: var(--dim);
+  margin-left: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+
+/* ==========================================================================
+   13. VARIABLES PAGE — unique components
+   ========================================================================== */
+
+/* Card title & sub (variables layout — no icon alongside) */
+.card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--card-accent, var(--accent-int));
+  letter-spacing: -0.02em;
+}
+
+.card-sub {
+  font-size: 10px;
+  color: var(--dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+/* Anatomy display */
+.anatomy-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 28px 28px 22px;
+  margin-bottom: 20px;
+  animation: slideUp 0.5s 0.1s ease both;
+}
+
+.anatomy-code {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin-bottom: 0;
+}
+
+.tok {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 0 5px;
+}
+
+.tok-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(20px, 3.5vw, 30px);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tok-label {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.tok-type  .tok-text  { color: var(--accent-int); }
+.tok-type  .tok-label { background: rgba(79,195,247,0.1);  color: var(--accent-int); border: 1px solid rgba(79,195,247,0.25); }
+.tok-space .tok-text  { color: transparent; user-select: none; }
+.tok-name  .tok-text  { color: #82aaff; }
+.tok-name  .tok-label { background: rgba(130,170,255,0.1); color: #82aaff;            border: 1px solid rgba(130,170,255,0.25); }
+.tok-op    .tok-text  { color: var(--muted); }
+.tok-op    .tok-label { background: rgba(74,85,104,0.2);   color: var(--dim);         border: 1px solid rgba(74,85,104,0.3); }
+.tok-val   .tok-text  { color: #f78c6c; }
+.tok-val   .tok-label { background: rgba(247,140,108,0.1); color: #f78c6c;            border: 1px solid rgba(247,140,108,0.25); }
+.tok-semi  .tok-text  { color: var(--dim); }
+.tok-semi  .tok-label { background: rgba(74,85,104,0.2);   color: var(--dim);         border: 1px solid rgba(74,85,104,0.3); }
+
+.anatomy-note {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.9;
+}
+.anatomy-note strong { color: var(--bright); }
+.anatomy-note code   { color: var(--accent-int); }
+
+/* Naming table */
+.table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  animation: slideUp 0.5s 0.05s ease both;
+}
+
+.naming-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.naming-table th {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--dim);
+  padding: 10px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.2);
+}
+
+.naming-table td {
+  padding: 11px 16px;
+  border-bottom: 1px solid rgba(30,37,53,0.7);
+  vertical-align: top;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.naming-table tr:last-child td { border-bottom: none; }
+.naming-table .rule { color: var(--bright); }
+
+.eg-good { color: #82aaff; }
+.eg-bad  { color: var(--accent-text); text-decoration: line-through; opacity: 0.7; }
+
+/* Notice box */
+.notice {
+  margin-top: 16px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent-text);
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.9;
+  animation: fadeIn 0.5s 0.2s ease both;
+}
+.notice strong { color: var(--bright); }
+.notice code   { color: var(--accent-text); }
+
+
+/* ==========================================================================
+   14. LIFECYCLE EXERCISE PAGE — unique components
+   ========================================================================== */
+
+/* Override page width for the wider exercise layout */
+.page.wide { max-width: 1040px; }
+
+/* Instructions box */
+.instructions {
+  margin: 24px 0 32px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent-bool);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.9;
+  animation: fadeIn 0.5s 0.1s ease both;
+}
+.instructions strong { color: var(--bright); }
+.instructions .key {
+  display: inline-block;
+  background: rgba(206,147,216,0.12);
+  border: 1px solid rgba(206,147,216,0.3);
+  color: var(--accent-bool);
+  padding: 1px 7px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+/* Drag zone label */
+.zone-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 12px;
+}
+
+/* Card pool (draggable source) */
+.card-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  min-height: 100px;
+  padding: 16px;
+  background: rgba(0,0,0,0.2);
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  margin-bottom: 36px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.card-pool.drag-over {
+  border-color: var(--accent-int);
+  background: rgba(79,195,247,0.04);
+}
+.card-pool.empty-hint::after {
+  content: "All cards placed — great work!";
+  font-size: 12px;
+  color: var(--dim);
+  margin: auto;
+  pointer-events: none;
+}
+
+/* Drop sequence grid */
+.drop-sequence {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+/* Drop slots */
+.drop-slot {
+  min-height: 160px;
+  border: 1px dashed var(--dim);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  transition: border-color 0.2s, background 0.2s;
+  position: relative;
+}
+.drop-slot .slot-num {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  font-size: 11px;
+  color: var(--dim);
+  font-weight: 700;
+}
+.drop-slot .slot-hint {
+  font-size: 11px;
+  color: var(--dim);
+  text-align: center;
+}
+.drop-slot.drag-over {
+  border-color: var(--accent-float);
+  background: rgba(129,199,132,0.05);
+}
+.drop-slot.correct {
+  border-color: var(--accent-float);
+  background: rgba(129,199,132,0.06);
+}
+.drop-slot.incorrect {
+  border-color: var(--accent-text);
+  background: rgba(255,138,101,0.06);
+  animation: shake 0.35s ease;
+}
+
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25%      { transform: translateX(-5px); }
+  75%      { transform: translateX(5px); }
+}
+
+/* Step cards (draggable) */
+.step-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+  transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+  width: 200px;
+  flex-shrink: 0;
+  animation: slideUp 0.4s ease both;
+}
+.step-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  border-color: var(--card-accent, #4fc3f7);
+}
+.step-card.dragging {
+  opacity: 0.4;
+  transform: scale(0.97);
+  cursor: grabbing;
+}
+.step-card.placed {
+  width: 100%;
+  cursor: default;
+  animation: none;
+}
+.step-card.placed:hover { transform: none; box-shadow: none; }
+
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px 9px;
+  border-bottom: 1px solid var(--border);
+}
+.card-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+.card-body {
+  padding: 10px 14px 12px;
+}
+.card-action {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--card-accent, #4fc3f7);
+  opacity: 0.7;
+  margin-bottom: 6px;
+}
+.card-desc {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+.card-file {
+  margin-top: 8px;
+  padding: 5px 10px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 3px;
+  font-size: 11px;
+}
+.card-file .kw  { color: var(--syn-keyword); }
+.card-file .id  { color: var(--syn-ident); }
+.card-file .str { color: var(--syn-string); }
+.card-file .val { color: var(--syn-value); }
+.card-file .cmt { color: var(--syn-comment); font-style: italic; }
+.card-file .ty  { color: var(--card-accent, #4fc3f7); }
+
+/* Exercise controls */
+.controls {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+}
+.btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 9px 20px;
+  border-radius: 4px;
+  border: 1px solid;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-check {
+  background: rgba(79,195,247,0.12);
+  border-color: rgba(79,195,247,0.35);
+  color: var(--accent-int);
+}
+.btn-check:hover { background: rgba(79,195,247,0.22); }
+.btn-reset {
+  background: rgba(74,85,104,0.15);
+  border-color: var(--dim);
+  color: var(--muted);
+}
+.btn-reset:hover {
+  background: rgba(74,85,104,0.3);
+  color: var(--bright);
+}
+.btn-reveal {
+  background: rgba(255,213,79,0.1);
+  border-color: rgba(255,213,79,0.3);
+  color: var(--accent-gold);
+}
+.btn-reveal:hover { background: rgba(255,213,79,0.18); }
+
+/* Result banner */
+.result-banner {
+  display: none;
+  margin-top: 20px;
+  padding: 14px 20px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  animation: fadeIn 0.3s ease both;
+}
+.result-banner.success {
+  display: block;
+  background: rgba(129,199,132,0.1);
+  border: 1px solid rgba(129,199,132,0.35);
+  color: var(--accent-float);
+}
+.result-banner.partial {
+  display: block;
+  background: rgba(255,213,79,0.08);
+  border: 1px solid rgba(255,213,79,0.3);
+  color: var(--accent-gold);
+}
+.result-banner.wrong {
+  display: block;
+  background: rgba(255,138,101,0.08);
+  border: 1px solid rgba(255,138,101,0.3);
+  color: var(--accent-text);
+}
+
+/* Answer key */
+.answer-key {
+  display: none;
+  margin-top: 28px;
+  padding: 18px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent-gold);
+  border-radius: 6px;
+  animation: fadeIn 0.4s ease both;
+}
+.answer-key h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  color: var(--accent-gold);
+  margin-bottom: 12px;
+}
+.answer-key ol {
+  padding-left: 18px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 2;
+}
+.answer-key ol li strong { color: var(--bright); }
+.answer-key ol li span  { color: var(--accent-int); }

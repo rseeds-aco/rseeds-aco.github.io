@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#111520"/>
+      <stop offset="100%" stop-color="#0a0d14"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="32" height="32" rx="4" fill="url(#bg)"/>
+  <rect width="32" height="32" rx="4" fill="none" stroke="#1e2535" stroke-width="1"/>
+
+  <!-- Paper roll (top center) -->
+  <rect x="11" y="2" width="10" height="10" rx="1" fill="#b8dfc2"/>
+  <rect x="11" y="2" width="10" height="2" fill="#81c784" opacity="0.6"/>
+  <rect x="11" y="5" width="10" height="2" fill="#81c784" opacity="0.6"/>
+  <rect x="11" y="8" width="10" height="2" fill="#81c784" opacity="0.6"/>
+  <!-- Sprocket holes -->
+  <circle cx="12.5" cy="3" r="0.8" fill="#0a0d14"/>
+  <circle cx="12.5" cy="7" r="0.8" fill="#0a0d14"/>
+  <circle cx="12.5" cy="11" r="0.8" fill="#0a0d14"/>
+  <circle cx="19.5" cy="3" r="0.8" fill="#0a0d14"/>
+  <circle cx="19.5" cy="7" r="0.8" fill="#0a0d14"/>
+  <circle cx="19.5" cy="11" r="0.8" fill="#0a0d14"/>
+
+  <!-- Terminal body -->
+  <rect x="4" y="13" width="24" height="13" rx="2" fill="#161b28"/>
+  <rect x="4" y="13" width="24" height="13" rx="2" fill="none" stroke="#1e2535" stroke-width="0.75"/>
+
+  <!-- Screen -->
+  <rect x="6" y="15" width="20" height="9" rx="1" fill="#050a10"/>
+
+  <!-- Cursor / prompt glow -->
+  <text x="8" y="22" font-family="monospace" font-size="6" fill="#4fc3f7" opacity="0.9">_</text>
+  <!-- Accent dot: PWR LED -->
+  <circle cx="27" cy="14.5" r="1.2" fill="#81c784"/>
+
+  <!-- Keyboard row -->
+  <rect x="5" y="27" width="22" height="3" rx="1" fill="#1a1f2c"/>
+  <rect x="7"  y="28" width="3" height="1.5" rx="0.5" fill="#2e3447"/>
+  <rect x="11" y="28" width="3" height="1.5" rx="0.5" fill="#2e3447"/>
+  <rect x="15" y="28" width="4" height="1.5" rx="0.5" fill="#2e3447"/>
+  <rect x="20" y="28" width="3" height="1.5" rx="0.5" fill="#2e3447"/>
+  <rect x="24" y="28" width="2" height="1.5" rx="0.5" fill="#2e3447"/>
+</svg>

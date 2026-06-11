@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0d14;
+  --surface: #111520;
+  --border: #1e2535;
+  --dim: #4a5568;
+  --muted: #8892a4;
+  --bright: #e8edf5;
+  --accent-int: #4fc3f7;
+  --accent-float: #81c784;
+  --accent-text: #ff8a65;
+  --accent-bool: #ce93d8;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--bright);
+  padding: 36px 24px 48px;
+}
+.page { max-width: 980px; margin: 0 auto; }
+header {
+  border-left: 4px solid var(--accent-int);
+  padding-left: 20px;
+  margin-bottom: 40px;
+}
+header .label { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
+header h1 { font-family: 'Syne', sans-serif; font-size: clamp(24px, 5vw, 38px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+header h1 span { color: var(--accent-int); }
+.subtitle { font-size: 12px; color: var(--muted); margin-top: 8px; }
+.section-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); margin: 32px 0 12px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; transition: border-color 0.2s, transform 0.2s; margin-bottom: 14px; }
+.card:hover { transform: translateY(-2px); border-color: var(--card-accent, #4fc3f7); }
+.card-blue  { --card-accent: var(--accent-int); }
+.card-green { --card-accent: var(--accent-float); }
+.card-orange{ --card-accent: var(--accent-text); }
+.card-purple{ --card-accent: var(--accent-bool); }
+.card-header { display: flex; align-items: center; gap: 14px; padding: 14px 18px 12px; border-bottom: 1px solid var(--border); }
+.concept-icon { font-size: 20px; width: 36px; text-align: center; }
+.concept-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800; color: var(--card-accent, #4fc3f7); letter-spacing: -0.01em; flex: 1; }
+.badge { font-size: 10px; font-weight: 700; padding: 2px 10px; border-radius: 2px; background: rgba(255,255,255,0.05); color: var(--card-accent, #4fc3f7); border: 1px solid rgba(255,255,255,0.1); white-space: nowrap; }
+.card-body { padding: 14px 18px; }
+.talking-point { font-size: 12.5px; color: var(--muted); line-height: 1.7; margin-bottom: 10px; padding-left: 14px; border-left: 2px solid var(--border); }
+.talking-point strong { color: var(--bright); }
+.talking-point em { color: var(--card-accent, #4fc3f7); font-style: normal; }
+.code-block { background: rgba(0,0,0,0.3); border-radius: 4px; padding: 12px 16px; margin: 12px 0 4px; overflow-x: auto; }
+.code-line { font-size: 12px; line-height: 1.85; white-space: pre; }
+.kw  { color: #c792ea; }
+.ty  { color: var(--card-accent, #4fc3f7); }
+.id  { color: #82aaff; }
+.op  { color: var(--dim); }
+.val { color: #f78c6c; }
+.str { color: #c3e88d; }
+.cmt { color: #546e7a; font-style: italic; }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); gap: 14px; }
+.teaser { margin-top: 32px; padding: 18px 20px; background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--accent-bool); border-radius: 6px; font-size: 12px; color: var(--muted); line-height: 1.8; }
+.teaser-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; color: var(--accent-bool); margin-bottom: 8px; letter-spacing: -0.01em; }
+.teaser-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.teaser-item { background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 4px; padding: 10px 12px; font-size: 11.5px; }
+.teaser-item .t-label { color: var(--accent-bool); font-weight: 700; margin-bottom: 4px; }
+footer { margin-top: 20px; padding: 14px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; font-size: 11px; color: var(--muted); line-height: 1.8; }
+footer strong { color: var(--bright); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="label">Java Concepts — Talking Points</div>
+    <h1>Mastering <span>Enums</span></h1>
+    <a href="../index.html" class="type-name">Home</a>
+    <div class="subtitle">Type-safe constants · Named values · Smart switches · A peek at advanced power</div>
+  </header>
+
+  <div class="section-label">① What even is an Enum?</div>
+  <div class="card card-blue">
+    <div class="card-header">
+      <div class="concept-icon">🎯</div>
+      <div class="concept-title">The "Closed Set" Problem</div>
+      <div class="badge">motivation</div>
+    </div>
+    <div class="card-body">
+      <div class="talking-point"><strong>The problem with plain ints and Strings:</strong> Nothing stops someone from passing <em>42</em> or <em>"SUNDAE"</em> where you expected a day of the week. The compiler can't save you.</div>
+      <div class="talking-point"><strong>Enums define a fixed, named set of values</strong> — like a custom type whose only legal values you list yourself. The compiler enforces it everywhere.</div>
+      <div class="talking-point"><strong>Mental model:</strong> "I want a variable that can only ever be <em>NORTH, SOUTH, EAST, or WEST</em> — and nothing else in the universe."</div>
+      <div class="code-block">
+        <div class="code-line"><span class="cmt">// ❌ Old fragile approach</span></div>
+        <div class="code-line"><span class="kw">int</span> <span class="id">direction</span> <span class="op">=</span> <span class="val">3</span><span class="op">;</span>  <span class="cmt">// What does 3 mean??</span></div>
+        <div class="code-line"></div>
+        <div class="code-line"><span class="cmt">// ✅ Enum approach</span></div>
+        <div class="code-line"><span class="ty">Direction</span> <span class="id">dir</span> <span class="op">=</span> <span class="ty">Direction</span><span class="op">.</span><span class="id">NORTH</span><span class="op">;</span>  <span class="cmt">// Crystal clear ✨</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">② Declaring your first Enum</div>
+  <div class="grid-2">
+    <div class="card card-green">
+      <div class="card-header">
+        <div class="concept-icon">📝</div>
+        <div class="concept-title">Basic Syntax</div>
+        <div class="badge">simple</div>
+      </div>
+      <div class="card-body">
+        <div class="talking-point">Replace <strong>class</strong> with <strong>enum</strong> — Java does the rest. Constants live in ALL_CAPS by convention (same as static final fields).</div>
+        <div class="talking-point"><strong>Each constant is implicitly</strong> <em>public static final</em> — you get singleton instances for free.</div>
+        <div class="code-block">
+          <div class="code-line"><span class="kw">enum</span> <span class="ty">Season</span> <span class="op">{</span></div>
+          <div class="code-line">    <span class="id">SPRING</span><span class="op">,</span> <span class="id">SUMMER</span><span class="op">,</span> <span class="id">FALL</span><span class="op">,</span> <span class="id">WINTER</span></div>
+          <div class="code-line"><span class="op">}</span></div>
+          <div class="code-line"></div>
+          <div class="code-line"><span class="ty">Season</span> <span class="id">now</span> <span class="op">=</span> <span class="ty">Season</span><span class="op">.</span><span class="id">SUMMER</span><span class="op">;</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card card-orange">
+      <div class="card-header">
+        <div class="concept-icon">🆓</div>
+        <div class="concept-title">Built-in Freebies</div>
+        <div class="badge">auto-generated</div>
+      </div>
+      <div class="card-body">
+        <div class="talking-point"><strong>Every enum gets these for free</strong> — no extra code needed:</div>
+        <div class="code-block">
+          <div class="code-line"><span class="id">Season</span><span class="op">.</span><span class="id">SUMMER</span><span class="op">.</span><span class="id">name</span><span class="op">()</span>     <span class="cmt">// → "SUMMER"</span></div>
+          <div class="code-line"><span class="id">Season</span><span class="op">.</span><span class="id">SUMMER</span><span class="op">.</span><span class="id">ordinal</span><span class="op">()</span>  <span class="cmt">// → 1 (0-indexed)</span></div>
+          <div class="code-line"><span class="ty">Season</span><span class="op">.</span><span class="id">valueOf</span><span class="op">(</span><span class="str">"FALL"</span><span class="op">)</span>    <span class="cmt">// → Season.FALL</span></div>
+          <div class="code-line"><span class="ty">Season</span><span class="op">.</span><span class="id">values</span><span class="op">()</span>          <span class="cmt">// → all 4, in order</span></div>
+        </div>
+        <div class="talking-point" style="margin-top:10px;"><strong>Avoid leaning on ordinal()</strong> — adding a constant later silently shifts all positions. Use <em>name()</em> or a custom field instead.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">③ Enums in action — real use cases</div>
+  <div class="grid-2">
+    <div class="card card-blue">
+      <div class="card-header">
+        <div class="concept-icon">🔀</div>
+        <div class="concept-title">switch on Enums</div>
+        <div class="badge">best use case</div>
+      </div>
+      <div class="card-body">
+        <div class="talking-point">Enums + switch are a <strong>perfect pair</strong>. The compiler warns you if you forget a case — that's <em>exhaustiveness checking</em> for free with modern Java.</div>
+        <div class="code-block">
+          <div class="code-line"><span class="kw">switch</span> <span class="op">(</span><span class="id">day</span><span class="op">) {</span></div>
+          <div class="code-line">  <span class="kw">case</span> <span class="id">MONDAY</span><span class="op">,</span> <span class="id">TUESDAY</span> <span class="op">-></span></div>
+          <div class="code-line">    <span class="ty">System</span><span class="op">.</span><span class="id">out</span><span class="op">.</span><span class="id">println</span><span class="op">(</span><span class="str">"Grind time"</span><span class="op">);</span></div>
+          <div class="code-line">  <span class="kw">case</span> <span class="id">SATURDAY</span><span class="op">,</span> <span class="id">SUNDAY</span> <span class="op">-></span></div>
+          <div class="code-line">    <span class="ty">System</span><span class="op">.</span><span class="id">out</span><span class="op">.</span><span class="id">println</span><span class="op">(</span><span class="str">"Weekend!"</span><span class="op">);</span></div>
+          <div class="code-line">  <span class="kw">default</span> <span class="op">-> ...</span></div>
+          <div class="code-line"><span class="op">}</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card card-green">
+      <div class="card-header">
+        <div class="concept-icon">⚖️</div>
+        <div class="concept-title">Comparison &amp; Equality</div>
+        <div class="badge">gotcha-proof</div>
+      </div>
+      <div class="card-body">
+        <div class="talking-point">Enum constants are <strong>singletons</strong>, so <em>==</em> is safe and idiomatic — no <em>.equals()</em> required (unlike Strings!).</div>
+        <div class="talking-point">Enums implement <strong>Comparable</strong> automatically, ordered by declaration. You can sort a list of enum values with zero extra code.</div>
+        <div class="code-block">
+          <div class="code-line"><span class="kw">if</span> <span class="op">(</span><span class="id">season</span> <span class="op">==</span> <span class="ty">Season</span><span class="op">.</span><span class="id">WINTER</span><span class="op">) {</span></div>
+          <div class="code-line">    <span class="cmt">// ✅ Safe! No .equals() needed</span></div>
+          <div class="code-line"><span class="op">}</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card card-orange">
+      <div class="card-header">
+        <div class="concept-icon">🗂️</div>
+        <div class="concept-title">EnumSet &amp; EnumMap</div>
+        <div class="badge">performance win</div>
+      </div>
+      <div class="card-body">
+        <div class="talking-point"><strong>EnumSet</strong> uses a single long bitmask under the hood — blazing fast, no boxing, purpose-built for enum flags.</div>
+        <div class="code-block">
+          <div class="code-line"><span class="ty">EnumSet</span><span class="op">&lt;</span><span class="ty">Day</span><span class="op">&gt;</span> <span class="id">weekend</span> <span class="op">=</span></div>
+          <div class="code-line">    <span class="ty">EnumSet</span><span class="op">.</span><span class="id">of</span><span class="op">(</span><span class="id">Day</span><span class="op">.</span><span class="id">SAT</span><span class="op">,</span> <span class="id">Day</span><span class="op">.</span><span class="id">SUN</span><span class="op">);</span></div>
+          <div class="code-line"></div>
+          <div class="code-line"><span class="ty">EnumMap</span><span class="op">&lt;</span><span class="ty">Day</span><span class="op">,</span> <span class="ty">String</span><span class="op">&gt;</span> <span class="id">plans</span> <span class="op">=</span></div>
+          <div class="code-line">    <span class="kw">new</span> <span class="ty">EnumMap</span><span class="op">&lt;&gt;(</span><span class="ty">Day</span><span class="op">.</span><span class="kw">class</span><span class="op">);</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card card-purple">
+      <div class="card-header">
+        <div class="concept-icon">🛠️</div>
+        <div class="concept-title">Common Real-World Enums</div>
+        <div class="badge">use cases</div>
+      </div>
+      <div class="card-body">
+        <div class="talking-point"><strong>State machines:</strong> <em>OrderStatus.PENDING → SHIPPED → DELIVERED</em></div>
+        <div class="talking-point"><strong>Config flags:</strong> <em>LogLevel.DEBUG / INFO / WARN / ERROR</em></div>
+        <div class="talking-point"><strong>HTTP verbs:</strong> <em>HttpMethod.GET / POST / PUT / DELETE</em></div>
+        <div class="talking-point"><strong>UI modes:</strong> <em>Theme.LIGHT / DARK / SYSTEM</em></div>
+        <div class="talking-point"><strong>The golden rule:</strong> if it's a <em>closed, named set that rarely changes</em> — reach for an enum.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="teaser">
+    <div class="teaser-title">⚡ Level Up — Enums can hold data too</div>
+    <div style="color: var(--muted); font-size: 12px; line-height: 1.7;">
+      Here's the twist: enums are secretly full Java classes. Each constant can carry <strong style="color:var(--bright)">constant-specific values</strong>,
+      accessed via <strong style="color:var(--bright)">getters</strong>, and initialized through a <strong style="color:var(--bright)">private constructor</strong>.
+      A planet enum could store mass and radius. A currency enum could store its symbol and decimal precision. That's next level — but the door is open.
+    </div>
+    <div class="teaser-grid">
+      <div class="teaser-item">
+        <div class="t-label">fields + CTOR hint</div>
+        <div class="code-block" style="margin:6px 0 0; padding: 8px 10px; --card-accent: var(--accent-bool);">
+          <div class="code-line" style="font-size:11px;"><span class="kw">enum</span> <span class="ty">Planet</span> <span class="op">{</span></div>
+          <div class="code-line" style="font-size:11px;">  <span class="id">EARTH</span><span class="op">(</span><span class="val">5.97e24</span><span class="op">,</span> <span class="val">6.37e6</span><span class="op">),</span></div>
+          <div class="code-line" style="font-size:11px;">  <span class="id">MARS</span> <span class="op">(</span><span class="val">6.39e23</span><span class="op">,</span> <span class="val">3.39e6</span><span class="op">);</span></div>
+          <div class="code-line" style="font-size:11px;">  <span class="kw">final double</span> <span class="id">mass</span><span class="op">,</span> <span class="id">radius</span><span class="op">;</span></div>
+          <div class="code-line" style="font-size:11px;">  <span class="cmt">// private ctor + getters ...</span></div>
+          <div class="code-line" style="font-size:11px;"><span class="op">}</span></div>
+        </div>
+      </div>
+      <div class="teaser-item">
+        <div class="t-label">why it matters</div>
+        <div style="font-size:11.5px; color: var(--muted); line-height: 1.7; margin-top: 6px;">
+          Instead of a separate lookup table, the data <strong style="color:var(--bright)">lives with the constant itself</strong>.
+          Zero risk of the mapping going stale. Your enum <em style="color: var(--accent-bool)">IS</em> the single source of truth.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <strong>Key Takeaways</strong> &nbsp;·&nbsp;
+    Enums = type-safe closed sets &nbsp;·&nbsp;
+    Use <strong>switch</strong> for exhaustive branching &nbsp;·&nbsp;
+    Use <strong>==</strong> not .equals() &nbsp;·&nbsp;
+    Prefer <strong>EnumSet/EnumMap</strong> over HashSet/HashMap &nbsp;·&nbsp;
+    Avoid relying on <strong>ordinal()</strong> &nbsp;·&nbsp;
+    Enums can carry fields — that's the next chapter ✨
+  </footer>
+
+</div>
+</body>
+</html>
